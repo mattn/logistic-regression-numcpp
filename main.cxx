@@ -80,7 +80,7 @@ int main() {
     if (labels.count(x) > 0) n.push_back((float)labels[x]);
   });
   nc::NdArray<float> y(n);
-  y /= labels.size();
+  y /= (float) labels.size();
 
   names.clear();
   for(auto k : labels) {
