@@ -20,7 +20,7 @@ logistic_regression(nc::NdArray<float>& X, nc::NdArray<float>& y, float rate, in
   auto w = nc::random::randN<float>({1, X.shape().cols});
 
   for (auto n = 0; n < ntrains; n++) {
-    for (auto i = 0; i < X.shape().rows; i++) {
+    for (size_t i = 0; i < X.shape().rows; i++) {
       auto x = X.row(i);
       auto t = nc::NdArray<float>(x.copy());
       auto pred = softmax(t, w);
@@ -91,7 +91,7 @@ int main() {
   auto w = logistic_regression(X, y, 0.1, 300);
 
   // predict samples
-  for (auto i = 0; i < X.shape().rows; i++) {
+  for (size_t i = 0; i < X.shape().rows; i++) {
     auto x = X.row(i);
     auto n = (int) (predict(w, x) * (float) labels.size() + 0.5);
     std::cout << names[n] << std::endl;
