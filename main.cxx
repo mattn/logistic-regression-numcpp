@@ -1,4 +1,14 @@
+#ifdef _MSC_VER
+# pragma warning(push)
+# pragma warning(disable:26451 6262 26812 6297 4244)
+#endif
+
 #include <NumCpp.hpp>
+
+#ifdef _MSC_VER
+# pragma warning(pop)
+#endif
+
 #include <vector>
 #include <map>
 #include <string>
@@ -7,7 +17,7 @@
 static float
 softmax(nc::NdArray<float>& w, nc::NdArray<float>& x) {
   auto v = nc::dot<float>(w, x).item();
-  return 1.0 / (1.0 + std::exp(-v));
+  return 1.0f / (1.0f + std::exp(-v));
 }
 
 static float
@@ -20,7 +30,7 @@ logistic_regression(nc::NdArray<float>& X, nc::NdArray<float>& y, float rate, in
   auto w = nc::random::randN<float>({1, X.numCols()});
 
   for (auto n = 0; n < ntrains; n++) {
-    for (size_t i = 0; i < X.numRows(); i++) {
+    for (nc::uint32 i = 0; i < X.numRows(); i++) {
       auto&& x = X.row(i);
       auto&& t = nc::NdArray<float>(x.copy());
       auto pred = softmax(t, w);
@@ -68,18 +78,18 @@ int main() {
   }
   // make vector 4 dimentioned
   nc::NdArray<float> X(rows);
-  X.reshape(rows.size()/4, 4);
+  X.reshape((nc::int32) rows.size()/4, 4);
 
   // make onehot values of names
-  std::map<std::string, int> labels;
+  std::map<std::string, size_t> labels;
   for(auto& name : names) {
     if (labels.count(name) == 0) labels[name] = labels.size();
   }
-  std::vector<float> n;
+  std::vector<float> counts;
   for (auto& name : names) {
-    if (labels.count(name) > 0) n.push_back((float)labels[name]);
+    if (labels.count(name) > 0) counts.push_back((float)labels[name]);
   }
-  nc::NdArray<float> y(n);
+  nc::NdArray<float> y(counts);
   y /= (float) labels.size();
 
   names.clear();
@@ -88,12 +98,13 @@ int main() {
   }
 
   // make factor from input values
-  auto w = logistic_regression(X, y, 0.1, 300);
+  auto w = logistic_regression(X, y, 0.1f, 300);
 
   // predict samples
-  for (size_t i = 0; i < X.numRows(); i++) {
+  for (nc::uint32 i = 0; i < X.numRows(); i++) {
     auto x = X.row(i);
-    auto n = (int) (predict(w, x) * (float) labels.size() + 0.5);
+    auto n = (size_t) (predict(w, x) * (float) labels.size() + 0.5);
+    if (n > names.size() - 1) n = names.size() - 1;
     std::cout << names[n] << std::endl;
   }
 
