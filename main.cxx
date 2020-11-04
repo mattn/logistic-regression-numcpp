@@ -103,7 +103,7 @@ int main() {
   // predict samples
   for (nc::uint32 i = 0; i < X.numRows(); i++) {
     auto x = X.row(i);
-    auto n = (size_t) (predict(w, x) * (float) labels.size() + 0.5);
+    auto n = (size_t) ((double) predict(w, x) * (double) labels.size() + 0.5);
     if (n > names.size() - 1) n = names.size() - 1;
     std::cout << names[n] << std::endl;
   }
