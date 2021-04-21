@@ -81,21 +81,21 @@ int main() {
   X.reshape((nc::int32) rows.size()/4, 4);
 
   // make onehot values of names
-  std::map<std::string, size_t> labels;
-  for(auto& name : names) {
-    if (labels.count(name) == 0) labels[name] = labels.size();
-  }
+  std::map<std::string, std::size_t> labels;
   std::vector<float> counts;
-  for (auto& name : names) {
-    if (labels.count(name) > 0) counts.push_back((float)labels[name]);
+  std::vector<std::string> tmp;
+  for (auto &name : names) {
+    std::size_t &label = labels[name];
+    if (label == 0) {
+      label = labels.size();
+      tmp.push_back(name);
+    }
+    counts.push_back((float) (label - 1));
   }
+  names = tmp;
+
   nc::NdArray<float> y(counts);
   y /= (float) labels.size();
-
-  names.clear();
-  for(auto& k : labels) {
-    names.push_back(k.first);
-  }
 
   // make factor from input values
   auto w = logistic_regression(X, y, 0.1f, 300);
