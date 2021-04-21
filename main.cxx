@@ -38,7 +38,7 @@ logistic_regression(nc::NdArray<float>& X, nc::NdArray<float>& y, float rate, in
       auto scale = rate * perr * pred * (1 - pred);
       auto&& dx = x.copy();
       dx += x;
-      dx *= scale;
+      dx *= scale * (float) X.numCols();
       w += dx;
     }
   }
